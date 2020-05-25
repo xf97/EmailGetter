@@ -8,11 +8,11 @@ import requests
 class getEmail:
 	def __init__(self):
 		self.page = 1
-		self.serach_str = "https://github.com/search?p="+str(self.page)+"&q=smart+contract&type=Users"
-
+		self.serach_str = "https://api.github.com/search/users?q=smart+contract"
+		self.headers = {'User-Agent':'Mozilla/5.0', 'Authorization':'token 089c9956788d8b7924ff750dee157dbe4d12b013', 'Content-Type':'application/json', 'method':'GET', 'Accept':'application/json'}
 	def getText(self):
 		try:
-			r = requests.get(self.serach_str, timeout = 50)
+			r = requests.get(self.serach_str, timeout = 50, headers = self.headers)
 			r.raise_for_status()
 			r.encoding = r.apparent_encoding
 			return r.text
