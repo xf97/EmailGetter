@@ -6,11 +6,19 @@ import requests
 
 
 class getEmail:
-	def __init__(self):
+	def __init__(self, _tokenFile):
 		self.page = 1
-		self.serach_str = "https://api.github.com/search/users?q=smart+contract"
-		self.headers = {'User-Agent':'Mozilla/5.0', 'Authorization':'token 089c9956788d8b7924ff750dee157dbe4d12b013', 'Content-Type':'application/json', 'method':'GET', 'Accept':'application/json'}
-	
+		self.serach_str = "https://api.github.com/users/perfectmak"
+		#self.serach_str = "https://api.github.com/search/users?q=smart+contract"
+		self.token = self.getToken(_tokenFile)
+		self.headers = {'User-Agent':'Mozilla/5.0', 'Authorization':'token ' + str(self.token), 'Content-Type':'application/json', 'method':'GET', 'Accept':'application/json'}
+		
+	def getToken(self, _tokenFile):
+		f = open(_tokenFile, "r", encoding = "utf-8")
+		token = f.read()
+		f.close()
+		return token
+
 	def getText(self):
 		r = requests.get(self.serach_str, timeout = 50, headers = self.headers)
 		r.raise_for_status()
@@ -33,7 +41,7 @@ class getEmail:
 
 #unit test
 if __name__ == "__main__":
-	g = getEmail()
+	g = getEmail("token_win10.txt")
 	text = g.getText()
 	f = open("html.txt", "w", encoding = "utf-8")
 	f.write(text)
