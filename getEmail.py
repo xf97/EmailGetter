@@ -36,11 +36,12 @@ class getEmail:
 	def getSearchStr(self):
 		return self.serach_str
 
-	def getInfo(self, _search_str):
+	def getInfo(self, _search_str, _model):
 		r = requests.get(_search_str, timeout = 50, headers = self.headers)
 		r.raise_for_status()
 		r.encoding = r.apparent_encoding
-		self.writeTxt("usersList.txt", r.text, "w")
+		if _model == "-GL":
+			self.writeTxt("usersList.txt", r.text, "w")
 		return True
 
 	def jsonToDict(self, _json):
@@ -76,7 +77,7 @@ class getEmail:
 		number = 0
 		true_number = 0
 		for i in _usersLogin:
-			info = self.getInfo(serach_user_str + i)
+			info = self.getInfo(serach_user_str + i, "-GI")
 			infoDict = self.jsonToDict(info)
 			email = infoDict["email"]
 			if email == "null" or email == "None":
@@ -98,6 +99,7 @@ class getEmail:
 		usersList = self.getText("usersList.txt")
 		usersDict = self.jsonToDict(usersList)
 		usersLogin = self.getUsersLogin(usersDict)
+		print(usersLogin)
 		self.getUserInfo(usersLogin)
 		
 
@@ -116,7 +118,7 @@ if __name__ == "__main__":
 		print("Wrong parameters number.")
 	else:
 		if sys.argv[1].upper() == "-GL":
-			g.getInfo(g.getSearchStr())
+			g.getInfo(g.getSearchStr(), "-GL")
 		elif sys.argv[1].upper() == "-GI":
 			g.run()
 		else:
