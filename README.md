@@ -1,2 +1,6 @@
 # EmailGetter
-This project is used to get the email addresses of github users.
+This item is used to obtain the user's email address.
+
+## Requirements
+The following configuration is required:
+
