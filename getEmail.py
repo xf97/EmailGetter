@@ -21,13 +21,13 @@ class getEmail:
 		self.page = 1
 		#self.serach_str = "https://api.github.com/users/perfectmak"
 		#self.serach_str = "https://api.github.com/search/users?q=smart+contract"
-		self.getSearchStr()
+		self.getInitSearchStr()
 		self.token = self.getToken(_tokenFile)
 		self.headers = {'User-Agent':'Mozilla/5.0', 'Authorization':'token ' + str(self.token), 'Content-Type':'application/json', 'method':'GET', 'Accept':'application/json'}
 	
-	def getSearchStr(self):
-		self.serach_str = self.getText("searchStr.txt")
-		return serach_str.serach_str 
+	def getInitSearchStr(self):
+		self.search_str = self.getText("searchStr.txt")
+		return self.search_str 
 
 	def getToken(self, _tokenFile):
 		f = open(_tokenFile, "r", encoding = "utf-8")
@@ -39,7 +39,7 @@ class getEmail:
 			return token
 
 	def getSearchStr(self):
-		return self.serach_str
+		return self.search_str
 
 	def getInfo(self, _search_str, _model):
 		r = requests.get(_search_str, timeout = 50, headers = self.headers)
@@ -91,19 +91,16 @@ class getEmail:
 			email = infoDict["email"]
 			if email == None:
 				number = number + 1
-				print("\r" + str(number) + "/"+str(len(_usersLogin)))
+				print("\r" + str(number) + "/"+str(len(_usersLogin)), end = " ")
 				continue
 			else: 
 				self.writeTxt("email.txt", email + ';', "a+")
 				true_number = true_number + 1
 			number = number + 1
-			print("\r" + str(number) + "/"+str(len(_usersLogin)))
+			print("\r" + str(number) + "/"+str(len(_usersLogin)), end = " ")
 			#print(infoDict["email"])
 			time.sleep(10)
-		if number == true_number:
-			print("\nAll done.", " :", true_number)
-		else:
-			print("Only part of the users' email was obtained: ", true_number)
+		print("\nAll done.", " :", true_number)
 		print("See email addresses in email.txt")
 
 	def run(self):
