@@ -33,6 +33,9 @@ class getEmail:
 		else:
 			return token
 
+	def getSearchStr(self):
+		return self.serach_str
+
 	def getInfo(self, _search_str):
 		r = requests.get(_search_str, timeout = 50, headers = self.headers)
 		r.raise_for_status()
@@ -63,7 +66,7 @@ class getEmail:
 		for i in userItem:
 			#userItem is a list
 			userLogin.append(i["login"])
-		print("Get "+ len(userLogin) +" user logins.")
+		print("Get "+ str(len(userLogin)) +" user logins.")
 		return userLogin
 
 
@@ -112,7 +115,9 @@ if __name__ == "__main__":
 	if len(sys.argv) != 2:
 		print("Wrong parameters number.")
 	else:
-		if sys.argv[1].upper() == "GL":
-			g.getInfo()
-		elif sys.argv[1].upper() == "GI":
+		if sys.argv[1].upper() == "-GL":
+			g.getInfo(g.getSearchStr())
+		elif sys.argv[1].upper() == "-GI":
 			g.run()
+		else:
+			print("Wrong parameters.")
