@@ -10,6 +10,8 @@ import requests
 import os
 import platform
 import sys
+import json
+import time
 
 
 
@@ -31,12 +33,25 @@ class getEmail:
 		else:
 			return token
 
-	def getText(self):
-		r = requests.get(self.serach_str, timeout = 50, headers = self.headers)
+	def getInfo(self, _search_str):
+		r = requests.get(_search_str, timeout = 50, headers = self.headers)
 		r.raise_for_status()
 		r.encoding = r.apparent_encoding
-		writeTxt("usersList.txt", r.text)
+		#self.writeTxt("usersList.txt", r.text)
+		return r.text
 
+	def jsonToDict(self, _json):
+		dic = json.loads(_json)
+		#print(dic["total_count"])
+		return dic
+
+	def getText(self, _filename):
+		f = open(_filename, "r", encoding = "utf-8")
+		content = f.read()
+		f.close()
+		return content
+
+	#unuse
 	def makeUrl(self):
 		self.page += 1
 		self.serach_str = "https://github.com/search?p="+str(self.page)+"&q=smart+contract&type=Users"
@@ -47,8 +62,32 @@ class getEmail:
 		print("File " +_filename+ " has been written.")
 		f.close()
 
+	def getUsersLogin(self, _usersDict):
+		userItem = _usersDict["items"]
+		userLogin = list()
+		for i in userItem:
+			#userItem is a list
+			userLogin.append(i["login"])
+		print(len(userLogin))
+		return userLogin
+
+
+
+	def getUserInfo(self, _usersLogin):
+		serach_user_str = "https://api.github.com/users/"
+		for i in _usersLogin:
+			info = self.getInfo(serach_user_str + i)
+			infoDict = self.jsonToDict(info)
+			print(infoDict["email"])
+			time.sleep(60)
+		print("get done.")
+
 	def run(self):
-		self.getText()
+		usersList = self.getInfo(self.serach_str)
+		#usersList = self.getText("usersList.txt")
+		usersDict = self.jsonToDict(usersList)
+		usersLogin = self.getUsersLogin(usersDict)
+		self.getUserInfo(usersLogin)
 		
 
 def getTokenFile():
