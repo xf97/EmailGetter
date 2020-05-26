@@ -37,8 +37,8 @@ class getEmail:
 		r = requests.get(_search_str, timeout = 50, headers = self.headers)
 		r.raise_for_status()
 		r.encoding = r.apparent_encoding
-		#self.writeTxt("usersList.txt", r.text)
-		return r.text
+		self.writeTxt("usersList.txt", r.text, "w")
+		return True
 
 	def jsonToDict(self, _json):
 		dic = json.loads(_json)
@@ -51,13 +51,8 @@ class getEmail:
 		f.close()
 		return content
 
-	#unuse
-	def makeUrl(self):
-		self.page += 1
-		self.serach_str = "https://github.com/search?p="+str(self.page)+"&q=smart+contract&type=Users"
-
-	def writeTxt(self, _filename, _content):
-		f = open(_filename, "w", encoding = "utf-8")
+	def writeTxt(self, _filename, _content, _mode):
+		f = open(_filename, _mode, encoding = "utf-8")
 		f.write(_content)
 		print("File " +_filename+ " has been written.")
 		f.close()
@@ -68,23 +63,36 @@ class getEmail:
 		for i in userItem:
 			#userItem is a list
 			userLogin.append(i["login"])
-		print(len(userLogin))
+		print("Get "+ len(userLogin) +" user logins.")
 		return userLogin
 
 
 
 	def getUserInfo(self, _usersLogin):
 		serach_user_str = "https://api.github.com/users/"
+		number = 0
+		true_number = 0
 		for i in _usersLogin:
 			info = self.getInfo(serach_user_str + i)
 			infoDict = self.jsonToDict(info)
-			print(infoDict["email"])
-			time.sleep(60)
-		print("get done.")
+			email = infoDict["email"]
+			if email == "null" or email == "None":
+				continue
+			else: 
+				self.writeTxt("email.txt", email + ';', "a+")
+				true_number = true_number + 1
+			number = number + 1
+			#print(infoDict["email"])
+			time.sleep(10)
+		if number == true_number:
+			print("\nAll done.", " :", true_number)
+		else:
+			print("Only part of the users' email was obtained: ", true_number)
+		print("See email addresses in email.txt")
 
 	def run(self):
-		usersList = self.getInfo(self.serach_str)
-		#usersList = self.getText("usersList.txt")
+		#usersList = self.getInfo(self.serach_str)
+		usersList = self.getText("usersList.txt")
 		usersDict = self.jsonToDict(usersList)
 		usersLogin = self.getUsersLogin(usersDict)
 		self.getUserInfo(usersLogin)
@@ -100,4 +108,11 @@ def getTokenFile():
 #unit test
 if __name__ == "__main__":
 	g = getEmail(getTokenFile())
-	text = g.run()
+
+	if len(sys.argv) != 2:
+		print("Wrong parameters number.")
+	else:
+		if sys.argv[1].upper() == "GL":
+			g.getInfo()
+		elif sys.argv[1].upper() == "GI":
+			g.run()
