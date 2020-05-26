@@ -78,6 +78,7 @@ class getEmail:
 		true_number = 0
 		for i in _usersLogin:
 			info = self.getInfo(serach_user_str + i, "-GI")
+			print(info)
 			infoDict = self.jsonToDict(info)
 			email = infoDict["email"]
 			if email == "null" or email == "None":
@@ -99,7 +100,7 @@ class getEmail:
 		usersList = self.getText("usersList.txt")
 		usersDict = self.jsonToDict(usersList)
 		usersLogin = self.getUsersLogin(usersDict)
-		print(usersLogin)
+		#print(usersLogin)
 		self.getUserInfo(usersLogin)
 		
 
