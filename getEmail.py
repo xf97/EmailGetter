@@ -20,10 +20,15 @@ class getEmail:
 	def __init__(self, _tokenFile):
 		self.page = 1
 		#self.serach_str = "https://api.github.com/users/perfectmak"
-		self.serach_str = "https://api.github.com/search/users?q=smart+contract"
+		#self.serach_str = "https://api.github.com/search/users?q=smart+contract"
+		self.getSearchStr()
 		self.token = self.getToken(_tokenFile)
 		self.headers = {'User-Agent':'Mozilla/5.0', 'Authorization':'token ' + str(self.token), 'Content-Type':'application/json', 'method':'GET', 'Accept':'application/json'}
-		
+	
+	def getSearchStr(self):
+		self.serach_str = self.getText("searchStr.txt")
+		return serach_str.serach_str 
+
 	def getToken(self, _tokenFile):
 		f = open(_tokenFile, "r", encoding = "utf-8")
 		token = f.read()
@@ -42,7 +47,7 @@ class getEmail:
 		r.encoding = r.apparent_encoding
 		if _model == "-GL":
 			self.writeTxt("usersList.txt", r.text, "w")
-		return True
+		return r.text
 
 	def jsonToDict(self, _json):
 		dic = json.loads(_json)
@@ -53,12 +58,15 @@ class getEmail:
 		f = open(_filename, "r", encoding = "utf-8")
 		content = f.read()
 		f.close()
+		if content[-1] == "\n":
+			return content[:-1]
 		return content
 
 	def writeTxt(self, _filename, _content, _mode):
 		f = open(_filename, _mode, encoding = "utf-8")
 		f.write(_content)
-		print("File " +_filename+ " has been written.")
+		if _mode != "a+":
+			print("File " +_filename+ " has been written.")
 		f.close()
 
 	def getUsersLogin(self, _usersDict):
@@ -78,15 +86,18 @@ class getEmail:
 		true_number = 0
 		for i in _usersLogin:
 			info = self.getInfo(serach_user_str + i, "-GI")
-			print(info)
+			#print(info)
 			infoDict = self.jsonToDict(info)
 			email = infoDict["email"]
-			if email == "null" or email == "None":
+			if email == None:
+				number = number + 1
+				print("\r" + str(number) + "/"+str(len(_usersLogin)))
 				continue
 			else: 
 				self.writeTxt("email.txt", email + ';', "a+")
 				true_number = true_number + 1
 			number = number + 1
+			print("\r" + str(number) + "/"+str(len(_usersLogin)))
 			#print(infoDict["email"])
 			time.sleep(10)
 		if number == true_number:
